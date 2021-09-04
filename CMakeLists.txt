@@ -5,7 +5,7 @@ project("reassemble-data")
 set(CMAKE_CXX_STANDARD 17)
 
 set(HEADERS "reassembler.hpp")
-set(SOURCES "main.cpp")
+set(SOURCES "main.cpp" "reassembler.cpp")
 
 set(HEADER_DIR "include/")
 set(SOURCE_DIR "src/")
