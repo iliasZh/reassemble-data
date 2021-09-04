@@ -9,8 +9,11 @@ set(
 	"reassembler.hpp"
 )
 set(
-	SOURCES
+	SOURCE_ENTRY_POINT
 	"main.cpp"
+)
+set(
+	SOURCES
 	"reassembler.cpp"
 )
 
@@ -18,11 +21,13 @@ set(HEADER_DIR "include/")
 set(SOURCE_DIR "src/")
 
 list(TRANSFORM HEADERS PREPEND ${HEADER_DIR})
+list(TRANSFORM SOURCE_ENTRY_POINT PREPEND ${SOURCE_DIR})
 list(TRANSFORM SOURCES PREPEND ${SOURCE_DIR})
+
 
 add_executable(
 	${PROJECT_NAME}
-	${SOURCES} ${HEADERS}
+	${SOURCE_ENTRY_POINT} ${SOURCES} ${HEADERS}
 )
 
 # set requested C++ standard
@@ -37,7 +42,7 @@ target_include_directories(
 )
 target_sources(
 	${PROJECT_NAME} PRIVATE
-	${SOURCES} ${HEADERS}
+	${SOURCE_ENTRY_POINT} ${SOURCES} ${HEADERS}
 )
 
 # uncomment this block to enable google test
@@ -72,7 +77,7 @@ list(TRANSFORM TEST_SOURCES PREPEND ${TEST_DIR})
 
 add_executable(
 	${TEST_SUBPROJECT_NAME}
-	${TEST_SOURCES}
+	${TEST_SOURCES} ${SOURCES}
 )
 
 # set requested C++ standard

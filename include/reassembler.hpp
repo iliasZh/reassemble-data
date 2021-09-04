@@ -26,18 +26,16 @@ bool can_reassemble(const std::vector<data_segment>& p);
 std::optional<std::string> reassembly(const std::vector<data_segment>& packet);
 
 namespace fsys = std::filesystem;
-fsys::path get_path_to_folder(std::string_view name);
+std::optional<fsys::path>
+get_path_to_project_subdir(std::string_view project_dir_name,
+						   std::string_view subdir_name);
 
 } // namespace reassembler_impl
 
 
 namespace reassembler
 {
-/// returns a full path to input.txt in /src or /build directories
-/// if there's no input.txt, throws
-std::filesystem::path get_path_to_input();
-
-/// reassembles the message from the packet described in input_stream
+std::filesystem::path	   get_path_to_input_file(std::string_view file_name);
 std::optional<std::string> reassemble_data(std::istream& input_stream);
 } // namespace reassembler
 

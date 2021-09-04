@@ -83,13 +83,21 @@ std::optional<std::string> reassembly(const std::vector<data_segment>& packet)
 }
 
 namespace fsys = std::filesystem;
-fsys::path get_path_to_folder(std::string_view name)
+std::optional<fsys::path>
+get_path_to_project_subdir(std::string_view project_dir_name,
+						   std::string_view subdir_name)
 {
-	auto path = fsys::current_path();
-	while (*(--path.end()) != "reassemble-data") {
-		path = path.parent_path();
+	const auto curr_path = fsys::current_path();
+	fsys::path path{};
+	for (const auto& dir : curr_path) {
+		path /= dir;
+
+		if (dir == project_dir_name) {
+			path /= subdir_name;
+			return fsys::exists(path) ? path : std::optional<fsys::path>{};
+		}
 	}
-	return path / name;
+	return {};
 }
 
 } // namespace reassembler_impl
@@ -97,29 +105,38 @@ fsys::path get_path_to_folder(std::string_view name)
 
 namespace reassembler
 {
-/// returns a full path to input.txt in /src or /build directories
+/// returns a full path to input.txt in "/src" or executable's directories
 /// if there's no input.txt, throws
-std::filesystem::path get_path_to_input()
+std::filesystem::path get_path_to_input_file(std::string_view file_name)
 {
 	namespace fsys = std::filesystem;
 	namespace impl = reassembler_impl;
 
-	auto src_path	= impl::get_path_to_folder("src") / "input.txt";
-	auto build_path = fsys::current_path() / "input.txt";
-
 	// prepare error message
 	std::stringstream exception_msg{};
-	exception_msg << "fatal: failed to locate \"input.txt\"\n"
-				  << "search paths are:\n"
-				  << src_path << '\n'
-				  << build_path << '\n';
+	exception_msg << "fatal: failed to find \"" << file_name << "\"\n"
+				  << "search paths are:\n";
 
-	if (fsys::exists(src_path)) {
-		return src_path;
+	// look in the "src/" dir
+	if (auto src_dir_opt =
+			impl::get_path_to_project_subdir("reassemble-data", "src");
+		src_dir_opt.has_value())
+	{
+		auto src_dir_file = *src_dir_opt / file_name;
+		if (fsys::exists(src_dir_file)) {
+			return src_dir_file;
+		}
+		exception_msg << src_dir_file << '\n';
 	}
-	if (fsys::exists(build_path)) {
-		return build_path;
+
+	// look in the current dir
+	auto curr_dir_file = fsys::current_path() / file_name;
+	if (fsys::exists(curr_dir_file)) {
+		return curr_dir_file;
 	}
+
+	// throw if file was not found
+	exception_msg << curr_dir_file << '\n';
 	throw std::runtime_error(exception_msg.str());
 }
 

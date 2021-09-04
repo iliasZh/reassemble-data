@@ -1,12 +1,14 @@
 #include "reassembler.hpp"
+#include <string_view>
 
 // example
 int main()
 {
+	constexpr std::string_view input_file = "input.txt";
 	try {
-		std::cout << "Searching for \"input.txt\"...\n";
+		std::cout << "Searching for \"" << input_file << "\"...\n";
 
-		std::ifstream file(reassembler::get_path_to_input());
+		std::ifstream file(reassembler::get_path_to_input_file(input_file));
 		std::cout << "Reassembling data...\n";
 		auto reassembly_result = reassembler::reassemble_data(file);
 		if (reassembly_result.has_value()) {
