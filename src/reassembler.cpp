@@ -1,4 +1,5 @@
 #include "reassembler.hpp"
+#include <filesystem>
 
 namespace reassembler_impl
 {
@@ -87,16 +88,16 @@ std::optional<fsys::path>
 get_path_to_project_subdir(std::string_view project_dir_name,
 						   std::string_view subdir_name)
 {
-	const auto curr_path = fsys::current_path();
-	fsys::path path{};
-	for (const auto& dir : curr_path) {
-		path /= dir;
-
-		if (dir == project_dir_name) {
-			path /= subdir_name;
-			return fsys::exists(path) ? path : std::optional<fsys::path>{};
+	for (auto path						  = fsys::current_path().parent_path();
+		 path != path.parent_path(); path = path.parent_path())
+	{
+		if (auto candidate = path / project_dir_name / subdir_name;
+			fsys::exists(candidate))
+		{
+			return candidate;
 		}
 	}
+
 	return {};
 }
 
