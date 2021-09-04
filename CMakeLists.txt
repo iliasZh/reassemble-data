@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION "3.21")
 
 project("reassemble-data")
 
-set(CMAKE_CXX_STANDARD 17)
+set(PROJECT_CXX_STANDARD cxx_std_17) # safe default
 
 set(HEADERS "reassembler.hpp")
 set(SOURCES "main.cpp" "reassembler.cpp")
@@ -17,6 +17,13 @@ add_executable(
 	${PROJECT_NAME}
 	${SOURCES} ${HEADERS}
 )
+
+# set requested C++ standard
+target_compile_features(
+	${PROJECT_NAME} PRIVATE
+	${PROJECT_CXX_STANDARD}
+)
+
 target_include_directories(
 	${PROJECT_NAME} PRIVATE
 	${HEADER_DIR}
@@ -49,6 +56,12 @@ enable_testing()
 add_executable(
 	${TEST_SUBPROJECT_NAME}
 	test/test.cpp
+)
+
+# set requested C++ standard
+target_compile_features(
+	${TEST_SUBPROJECT_NAME} PRIVATE
+	${PROJECT_CXX_STANDARD}
 )
 
 target_link_libraries(
