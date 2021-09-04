@@ -4,8 +4,15 @@ project("reassemble-data")
 
 set(PROJECT_CXX_STANDARD cxx_std_17) # safe default
 
-set(HEADERS "reassembler.hpp")
-set(SOURCES "main.cpp" "reassembler.cpp")
+set(
+	HEADERS
+	"reassembler.hpp"
+)
+set(
+	SOURCES
+	"main.cpp"
+	"reassembler.cpp"
+)
 
 set(HEADER_DIR "include/")
 set(SOURCE_DIR "src/")
@@ -33,7 +40,7 @@ target_sources(
 	${SOURCES} ${HEADERS}
 )
 
-#[[ uncomment this block to enable google test
+# uncomment this block to enable google test
 
 # google test section
 set(TEST_SUBPROJECT_NAME "unit_tests")
@@ -53,9 +60,19 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+set(TEST_DIR "test/")
+
+set(
+	TEST_SOURCES
+	"impl_test.cpp"
+	"func_test.cpp"
+)
+
+list(TRANSFORM TEST_SOURCES PREPEND ${TEST_DIR})
+
 add_executable(
 	${TEST_SUBPROJECT_NAME}
-	test/test.cpp
+	${TEST_SOURCES}
 )
 
 # set requested C++ standard
@@ -78,7 +95,7 @@ target_include_directories(
 include(GoogleTest)
 gtest_discover_tests(${TEST_SUBPROJECT_NAME})
 
-]]
+
 
 # project compiler flags
 if (MSVC)

@@ -82,38 +82,29 @@ std::optional<std::string> reassembly(const std::vector<data_segment>& packet)
 	return {};
 }
 
-/// reassembles the message from the packet described in input_stream
-std::optional<std::string> reassemble_data(std::istream& input_stream)
-{
-	auto packet = read_packet(input_stream);
-
-	short target_data_type = 0;
-	input_stream >> target_data_type;
-
-	filter_out_unneeded_data_types(packet, target_data_type);
-
-	stable_sort_by_index(packet);
-
-	remove_duplicates(packet);
-
-	return reassembly(packet);
-}
-
 namespace fsys = std::filesystem;
-fsys::path get_path_to_src()
+fsys::path get_path_to_folder(std::string_view name)
 {
 	auto path = fsys::current_path();
 	while (*(--path.end()) != "reassemble-data") {
 		path = path.parent_path();
 	}
-	return path / "src";
+	return path / name;
 }
 
+} // namespace reassembler_impl
+
+
+namespace reassembler
+{
 /// returns a full path to input.txt in /src or /build directories
 /// if there's no input.txt, throws
-fsys::path get_path_to_input()
+std::filesystem::path get_path_to_input()
 {
-	auto src_path	= get_path_to_src() / "input.txt";
+	namespace fsys = std::filesystem;
+	namespace impl = reassembler_impl;
+
+	auto src_path	= impl::get_path_to_folder("src") / "input.txt";
 	auto build_path = fsys::current_path() / "input.txt";
 
 	// prepare error message
@@ -132,4 +123,23 @@ fsys::path get_path_to_input()
 	throw std::runtime_error(exception_msg.str());
 }
 
-} // namespace reassembler_impl
+/// reassembles the message from the packet described in input_stream
+std::optional<std::string> reassemble_data(std::istream& input_stream)
+{
+	namespace impl = reassembler_impl;
+
+	auto packet = impl::read_packet(input_stream);
+
+	short target_data_type = 0;
+	input_stream >> target_data_type;
+
+	impl::filter_out_unneeded_data_types(packet, target_data_type);
+
+	impl::stable_sort_by_index(packet);
+
+	impl::remove_duplicates(packet);
+
+	return impl::reassembly(packet);
+}
+
+} // namespace reassembler

@@ -5,6 +5,7 @@ int main()
 {
 	try {
 		std::cout << "Searching for \"input.txt\"...\n";
+
 		std::ifstream file(reassembler::get_path_to_input());
 		std::cout << "Reassembling data...\n";
 		auto reassembly_result = reassembler::reassemble_data(file);
