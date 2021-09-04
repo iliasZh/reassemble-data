@@ -2,8 +2,6 @@
 
 namespace reassembler_impl
 {
-
-namespace fsys = std::filesystem;
 struct data_segment
 {
 	int			index		   = -1;
@@ -101,6 +99,7 @@ std::optional<std::string> reassemble_data(std::istream& input_stream)
 	return reassembly(packet);
 }
 
+namespace fsys = std::filesystem;
 fsys::path get_path_to_src()
 {
 	auto path = fsys::current_path();
