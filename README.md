@@ -1,6 +1,5 @@
 # Reassemble out of order data
 
-#### This is a little coding problem
 Here I\'ve used the `<filesystem>` for the first time and had fun :)
 
 Problem statement:
